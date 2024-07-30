@@ -1,7 +1,0 @@
-[user]
-    name = Christian Feliks
-    email = christianfeliks1@gmail.com
-
-[url "git@github.com-MOOW4:"]
-    insteadOf = https://github.com/
-    insteadOf = git@github.com:
