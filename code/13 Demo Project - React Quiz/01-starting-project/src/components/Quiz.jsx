@@ -3,48 +3,86 @@ import QUESTIONS from '../../questions.js';
 import quizCompleteImg from '../assets/quiz-complete.png';
 import QuestionTimer from "./QuestionTimer.jsx";
 
+function shuffleAnswers(QUESTIONS) {
+	return QUESTIONS.map((question) => {
+		const answers = [...question.answers];
+		answers.sort(() => Math.random() - 0.5);
+		return {
+			...question,
+			answers,
+		};
+	});
+}
+
+const shuffledAnswers = shuffleAnswers(QUESTIONS);
+
+
 export default function Quiz() {
 
-  const [userAnswers, setUserAnswers] = useState([]);
-  const activeQuestionIndex = userAnswers.length;
+	const [answerState, setAnswerState] = useState('');
+	const [userAnswers, setUserAnswers] = useState([]);
+	const [isTimerRunning, setIsTimerRunning] = useState(true);
+	const activeQuestionIndex = answerState === '' ? userAnswers.length : userAnswers.length - 1;
 
-  const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
-    setUserAnswers((prevUserAnswers) => {
-      return [...prevUserAnswers, selectedAnswer];
-    });
-  }, []);
+	const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
+		setAnswerState('answered');
+		setIsTimerRunning(false);
+		setUserAnswers((prevUserAnswers) => {
+			return [...prevUserAnswers, selectedAnswer];
+		});
 
-  const handleSkipAnswer = useCallback(() => handleSelectAnswer(null), [handleSelectAnswer]);
+		setTimeout(() => {
+			if (selectedAnswer === QUESTIONS[activeQuestionIndex].answers[0]) {
+				setAnswerState('correct');
+			}
+			else{
+				setAnswerState('wrong');
+			}
 
-  function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
+      setTimeout(() => {
+        setAnswerState('');
+	      setIsTimerRunning(true);
+      }, 2000);
 
-  // console.log(`length: ${userAnswers.length} QUESTIONS:${QUESTIONS.length}`);
-  return (
-    userAnswers.length !== QUESTIONS.length ? (
-        <div id='quiz'>
-          <div id='question'>
-            <QuestionTimer key={activeQuestionIndex} timeout={10000} onTimeout={handleSkipAnswer}/>
-            <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
-            <ul id='answers'>
-              {shuffleArray([...QUESTIONS[activeQuestionIndex].answers]).map((answer) => {
-                return (
-                  <li key={answer} className='answer'>
-                    <button onClick={() => handleSelectAnswer(answer)}>{answer}</button>
-                  </li>)
-              })}
-            </ul>
-          </div>
-        </div>
-      ) :
-      <div id='summary'>
-        <h2>Summary</h2>
-        <img src={quizCompleteImg} alt='quiz complete'/>
-      </div>
-  );
+		}, 1000);
+	}, [activeQuestionIndex]);
+
+	const handleSkipAnswer = useCallback(() => handleSelectAnswer(null), [handleSelectAnswer]);
+
+	// console.log(`length: ${userAnswers.length} QUESTIONS:${QUESTIONS.length}`);
+	return (
+		userAnswers.length !== QUESTIONS.length ? (
+				<div id='quiz'>
+					<div id='question'>
+						<QuestionTimer key={activeQuestionIndex} timeout={10000} onTimeout={handleSkipAnswer} isRunning={isTimerRunning}/>
+						<h2>{QUESTIONS[activeQuestionIndex].text}</h2>
+						<ul id='answers'>
+							{shuffledAnswers[activeQuestionIndex].answers.map((answer) => {
+								let cssClasses = '';
+								const isSelected = userAnswers[activeQuestionIndex] === answer;
+								if (answerState === 'answered' && isSelected) {
+									cssClasses = 'selected';
+								}
+								if (isSelected) {
+									if (answerState === 'correct') {
+										cssClasses = 'correct';
+									} else if (answerState === 'wrong') {
+										cssClasses = 'wrong';
+									}
+								}
+								return (
+									<li key={answer} className='answer'>
+										<button onClick={() => handleSelectAnswer(answer)} className={cssClasses}>{answer}</button>
+									</li>
+								);
+							})}
+						</ul>
+					</div>
+				</div>
+			) :
+			<div id='summary'>
+				<h2>Summary</h2>
+				<img src={quizCompleteImg} alt='quiz complete'/>
+			</div>
+	);
 }
