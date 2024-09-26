@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import MealItem from "./MealItem.jsx";
 export default function MealList() {
 
 	const [meals , setMeals] = useState([]);
@@ -8,7 +8,8 @@ export default function MealList() {
 	const [error, setError] = useState(null);
 
 	useEffect(() => {
-		const fetchMeals = async () => {
+		async function fetchMeals() {
+			setIsLoading(true);
 			try {
 				const response = await axios.get('http://localhost:3000/meals');
 				setMeals(response.data);
@@ -25,10 +26,10 @@ export default function MealList() {
 	{/* TODO: disaply loading*/}
 
 	return (
-		<section id='meals'>
+		<ul id='meals'>
 			{meals.map(meal => (
 				<MealItem key={meal.id} meal={meal}/>
 			))}
-		</section>
+		</ul>
 	);
 }
