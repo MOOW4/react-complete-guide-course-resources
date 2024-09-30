@@ -25,8 +25,26 @@ export default function Checkout() {
     const fd = new FormData(event.target);
     const customerData = Object.fromEntries(fd.entries());
 
-    console.log(customerData);
+    fetch('http://localhost:3000/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        order: {
+          items: cartCtx.items,
+          customer: customerData
+        },
+      }),
+    }).then((response) => {
+      console.log(response);
+      if (response.ok) {
+        // userProgressCtx.showSuccess();
+        cartCtx.clearCart();
+      }
+    });
   };
+
 
   return (
     <Modal open={userProgressCtx.progress === 'checkout'} onClose={handleClose}>
