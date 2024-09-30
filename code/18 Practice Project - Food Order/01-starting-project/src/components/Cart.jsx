@@ -21,6 +21,10 @@ export default function Cart() {
     console.log(userProgressCtx.progress);
   }
 
+  function handleOpenCheckout() {
+    userProgressCtx.showCheckout();
+  }
+
   console.log(cartCtx.items);
 
   return (
@@ -33,10 +37,10 @@ export default function Cart() {
           </CartItem>
         ))}
       </ul>
-      <p className='cart-total'>{cartTotal}€</p>
+      <p className='cart-total'><b>{cartTotal}€</b></p>
       <div className='modal-actions'>
         <Button textOnly={true} onClick={handleCloseCart}>Close</Button>
-        <Button onClick={handleCloseCart}>Go to Checkout</Button>
+        <Button onClick={handleOpenCheckout}>Go to Checkout</Button>
       </div>
     </Modal>
   );
