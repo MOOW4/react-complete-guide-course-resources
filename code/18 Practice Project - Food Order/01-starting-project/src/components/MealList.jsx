@@ -1,29 +1,22 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import MealItem from "./MealItem.jsx";
+import useHttp from "./hooks/useHttp.jsx";
+import Error from "./Error.jsx";
+
+const initialData = [];
+const initialConfig = {};
+
 export default function MealList() {
 
-	const [meals , setMeals] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const {isLoading, error, data: meals} = useHttp('http://localhost:3000/meals', initialConfig, initialData);
 
-	useEffect(() => {
-		async function fetchMeals() {
-			setIsLoading(true);
-			try {
-				const response = await axios.get('http://localhost:3000/meals');
-				setMeals(response.data);
-				console.log(response.data);
-			} catch (error) {
-				setError(error);
-			}
-			finally {
-				setIsLoading(false);
-			}
-		}
-		fetchMeals();
-	}, []);
-	{/* TODO: disaply loading*/}
+	if(isLoading){
+		return <p className='center'>Loading...</p>;
+	}
+	if (error){
+		return <Error title='Failed to fetch' message={error}></Error>;
+	}
 
 	return (
 		<ul id='meals'>
