@@ -16,7 +16,8 @@ export default EventsPage;
 export async function loader() {
   const response = await fetch('http://localhost:8080/events');
   if (!response.ok) {
-    // TODO handle error
+    //throw new Error('Failed to fetch events');
+    throw new Response(JSON.stringify({message: "Something went wrong"}), {status: 500});
   } else {
     // const resData = await response.json();
       // const res= new Response(redData, {status: 201});
