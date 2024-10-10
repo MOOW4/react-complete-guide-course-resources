@@ -28,6 +28,10 @@ export async function action({request, params}){
     body: JSON.stringify(enteredData)
     })
 
+  if(response.status === 422){
+    return response;
+  }
+
   if (!response.ok) {
     return json({message: "Event could not be created"}, {status: 500});
   }
